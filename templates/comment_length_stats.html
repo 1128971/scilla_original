@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Статистические характеристики длины комментариев{% endblock %}
+
+{% block content %}
+    <h1>Статистические характеристики длины комментариев</h1>
+    <div class="table-container">
+        {{ tables | safe }}
+    </div>
+{% endblock %}

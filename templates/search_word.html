@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block content %}
+    <h1>Результаты поиска</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Комментарий</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in matched_comments %}
+                <tr>
+                    <td>{{ comment.comments }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

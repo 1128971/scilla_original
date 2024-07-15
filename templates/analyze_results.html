@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        caption {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Analysis Results</h1>
+    <p><a href="/">Go back to home page</a></p>
+    <table>
+        <caption>Results</caption>
+        <tr>
+            <th>Comment</th>
+            <th>Sentiment</th>
+            <th>Likes</th>
+            <th>Score</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result['Комментарий'] }}</td>
+            <td>{{ result['Оценка'] }}</td>
+            <td>{{ result['Количество лайков'] }}</td>
+            <td>{{ result['эмоциональный окрас'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

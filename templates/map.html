@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Тепловая карта упоминаний городов{% endblock %}
+
+{% block container_class %}map-container{% endblock %}
+
+{% block content %}
+    <h1>Тепловая карта упоминаний городов</h1>
+    <div class="map-container">
+        <iframe src="{{ url_for('static', filename='heatmap.html') }}" width="100%" height="100%" style="border:none;"></iframe>
+    </div>
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .map-container {
+            width: 100%;
+            height: 80vh; /* Adjust height as needed */
+            margin-top: 20px;
+        }
+
+        .container.map-container {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+{% endblock %}

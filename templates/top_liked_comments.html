@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Топ по лайкам{% endblock %}
+
+{% block content %}
+    <h1>Топ по лайкам</h1>
+    <div class="table-container">
+        {{ tables | safe }}
+    </div>
+{% endblock %}

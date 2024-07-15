@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Тепловая карта</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        html, body, #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([55.751244, 37.618423], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Example cities with mentions
+        var cities = [
+            {name: "Москва", coords: [55.751244, 37.618423], mentions: 100},
+            {name: "Санкт-Петербург", coords: [59.9342802, 30.3350986], mentions: 80},
+            {name: "Новосибирск", coords: [55.00835259999999, 82.9357327], mentions: 60},
+            // Add more cities as needed
+        ];
+
+        cities.forEach(function(city) {
+            L.circle(city.coords, {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: city.mentions * 1000 // Adjust the multiplier as needed
+            }).addTo(map).bindPopup(city.name + ": " + city.mentions + " mentions");
+        });
+    </script>
+</body>
+</html>

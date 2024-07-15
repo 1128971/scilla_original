@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Результаты анализа тональности{% endblock %}
+
+{% block content %}
+    <h1>Результаты анализа тональности</h1>
+    <div class="table-container">
+        {{ tables | safe }}
+    </div>
+{% endblock %}
