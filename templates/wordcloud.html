@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Облако слов{% endblock %}
+{% block title %}Облако Слов{% endblock %}
 
 {% block content %}
-    <h1>Облако слов</h1>
-    <img src="data:image/png;base64,{{ image_data }}" alt="Облако слов">
+    <h1>Облако Слов</h1>
+    <div class="visualization">
+        <img src="data:image/png;base64,{{ image_data }}">
+    </div>
 {% endblock %}

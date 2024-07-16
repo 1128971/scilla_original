@@ -41,12 +41,13 @@
     </section>
 
     <nav>
+        <h2>Дополнительный анализ</h2>
         <a href="/sentiment_distribution">Распределение тональности комментариев</a>
         <a href="/comment_length_distribution">Распределение длины комментариев по тональности</a>
         <a href="/comment_length_stats">Статистические характеристики длины комментариев по тональности</a>
         <a href="/bribe_comment_count">Количество комментариев по взяткам</a>
         <a href="/corruption_clusters">Кластеры о коррупции</a>
         <a href="/cluster_heatmap">Тепловая карта схожести кластеров</a>
-        <a href="/map">Карта с упоминанием городов России</a>
+        <a class="nav-button" onclick="window.location.href='/city_heatmap'">Карта с упоминанием городов России</a>
     </nav>
 {% endblock %}

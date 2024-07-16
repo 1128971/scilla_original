@@ -1,44 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Тепловая карта</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <style>
-        html, body, #map {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7ecc4dee78ee3bc130eea07d4903aef1 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@main/folium/templates/leaflet_heat.min.js"></script>
 </head>
 <body>
-    <div id="map"></div>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        var map = L.map('map').setView([55.751244, 37.618423], 5);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Example cities with mentions
-        var cities = [
-            {name: "Москва", coords: [55.751244, 37.618423], mentions: 100},
-            {name: "Санкт-Петербург", coords: [59.9342802, 30.3350986], mentions: 80},
-            {name: "Новосибирск", coords: [55.00835259999999, 82.9357327], mentions: 60},
-            // Add more cities as needed
-        ];
-
-        cities.forEach(function(city) {
-            L.circle(city.coords, {
-                color: 'red',
-                fillColor: '#f03',
-                fillOpacity: 0.5,
-                radius: city.mentions * 1000 // Adjust the multiplier as needed
-            }).addTo(map).bindPopup(city.name + ": " + city.mentions + " mentions");
-        });
-    </script>
+    
+    
+            <div class="folium-map" id="map_7ecc4dee78ee3bc130eea07d4903aef1" ></div>
+        
 </body>
+<script>
+    
+    
+            var map_7ecc4dee78ee3bc130eea07d4903aef1 = L.map(
+                "map_7ecc4dee78ee3bc130eea07d4903aef1",
+                {
+                    center: [55.751244, 37.618423],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 4,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_d8f6a0b5c1a0a517010fcc115ca6f37a = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_d8f6a0b5c1a0a517010fcc115ca6f37a.addTo(map_7ecc4dee78ee3bc130eea07d4903aef1);
+        
+    
+            var heat_map_6e030e27ce4fdd1977f667fff74a0f5d = L.heatLayer(
+                [[53.5891992, 142.9496845], [60.7145488, 114.9172123], [46.7112094, 38.2747987], [54.7261409, 55.947499], [60.7145488, 114.9172123], [46.7112094, 38.2747987], [57.370647, 61.4042865], [56.1307195, 47.2449597], [56.1307195, 47.2449597], [56.1307195, 47.2449597], [54.7261409, 55.947499], [56.1307195, 47.2449597], [56.1307195, 47.2449597], [56.1307195, 47.2449597], [56.1307195, 47.2449597], [56.1307195, 47.2449597], [56.1307195, 47.2449597], [57.370647, 61.4042865]],
+                {"blur": 15, "maxZoom": 18, "minOpacity": 0.5, "radius": 25}
+            );
+        
+    
+            heat_map_6e030e27ce4fdd1977f667fff74a0f5d.addTo(map_7ecc4dee78ee3bc130eea07d4903aef1);
+        
+</script>
 </html>

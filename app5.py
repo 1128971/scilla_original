@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, send_from_directory, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for
 import time
+import numpy as np
 import requests
 import re
 import praw
@@ -44,6 +45,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from geopy.geocoders import Nominatim
 import folium
 from folium.plugins import HeatMap
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 app = Flask(__name__)
 
@@ -215,17 +218,17 @@ def analyze_comments():
 # Загрузка списка городов РФ
 cities = pd.read_csv('russian_cities.csv')  # Файл должен содержать список городов и их регионы
 
-# Функция для поиска городов в тексте
 def find_cities_in_text(text, cities_list):
     found_cities = []
     for city in cities_list:
-        if re.search(r'\b' + re.escape(city) + r'\b', text):
+        if city.lower() in text.lower():
             found_cities.append(city)
     return found_cities
 
 def create_heatmap():
     # Чтение комментариев
     comments_df = pd.read_csv("comments.csv")
+    cities_df = pd.read_csv("russian_cities.csv")
 
     # Инициализация геолокатора
     geolocator = Nominatim(user_agent="geoapiExercises")
@@ -233,7 +236,7 @@ def create_heatmap():
     # Обработка каждого комментария
     city_mentions = []
     for comment in comments_df['comments']:
-        mentioned_cities = find_cities_in_text(comment, cities['city'])
+        mentioned_cities = find_cities_in_text(comment, cities_df['city'])
         city_mentions.extend(mentioned_cities)
 
     # Геокодирование упомянутых городов
@@ -245,8 +248,11 @@ def create_heatmap():
 
     # Создание тепловой карты
     heat_map = folium.Map(location=[55.751244, 37.618423], zoom_start=4)
-    HeatMap(city_coordinates).add_to(heat_map)
-    heat_map.save("static/heatmap.html")
+    if city_coordinates:
+        HeatMap(city_coordinates).add_to(heat_map)
+    heatmap_path = os.path.join('static', 'heatmap.html')
+    heat_map.save(heatmap_path)
+    return heatmap_path
 
 def create_clusters():
     with open("comments.csv", "r", encoding="utf-8") as csvfile:
@@ -350,7 +356,7 @@ def bribe_comment_count():
     bribe_counts = df['contains_bribe'].value_counts()
 
     plt.figure(figsize=(10, 6))
-    sns.barplot(x=bribe_counts.index, y=bribe_counts.values, palette='viridis')
+    sns.barplot(x=bribe_counts.index, y=bribe_counts.values, palette='viridis', hue=bribe_counts.index)
     plt.xlabel('Содержит упоминание взятки')
     plt.ylabel('Количество комментариев')
     plt.title('Количество комментариев по взяткам')
@@ -385,10 +391,6 @@ def corruption_clusters():
 def preprocess_text(text):
     return text.lower()
 
-def preprocess_text(text):
-    # Простая функция для предварительной обработки текста
-    return text.lower()
-
 def similarity_heatmap():
     df = pd.read_csv("comments.csv")
     df['comments'] = df['comments'].apply(preprocess_text)
@@ -397,20 +399,23 @@ def similarity_heatmap():
     tfidf_matrix = vectorizer.fit_transform(df['comments'])
     cosine_sim = cosine_similarity(tfidf_matrix)
     
-    # Суммирование значений в строках и сортировка
-    sum_sim = cosine_sim.sum(axis=1)
-    sorted_indices = sum_sim.argsort()
-    sorted_sim = cosine_sim[sorted_indices, :][:, sorted_indices]
+    # Кластеризация
+    num_clusters = 5
+    kmeans = KMeans(n_clusters=num_clusters, random_state=0).fit(tfidf_matrix)
+    clusters = kmeans.labels_
     
-    # Обращение порядка строк (от меньшего к большему)
-    sorted_sim = sorted_sim[::-1]
-
+    cluster_sim = np.zeros((num_clusters, num_clusters))
+    for i in range(num_clusters):
+        for j in range(num_clusters):
+            cluster_sim[i, j] = np.mean(cosine_sim[clusters == i][:, clusters == j])
+    
     # Создание тепловой карты
     plt.figure(figsize=(10, 8))
-    sns.heatmap(sorted_sim, cmap='viridis', annot=True, fmt=".2f", cbar=True)
+    ax = sns.heatmap(cluster_sim, cmap='viridis', annot=True, fmt=".2f", cbar=True)
     
-    # Настройка осей
-    plt.gca().invert_yaxis()
+    # Инвертирование оси y
+    ax.invert_yaxis()
+    
     plt.title('Тепловая карта схожести кластеров')
     
     heatmap_path = os.path.join('static', 'similarity_heatmap.png')
@@ -485,7 +490,7 @@ def analyze_comments_route():
 @app.route('/sentiment_analysis')
 def sentiment_analysis():
     result_df = analyze_comments()
-    return render_template('sentiment_analysis.html', tables=[result_df.to_html(classes='data', header="true", index=False)], titles=['Результаты анализа тональности'])
+    return render_template('sentiment_analysis.html', tables=result_df.to_dict(orient='records'))
 
 @app.route('/clusters')
 def clusters():
@@ -519,7 +524,6 @@ def histogram():
     with open(histogram_path, "rb") as f:
         image = f.read()
     return render_template('histogram.html', image_data=base64.b64encode(image).decode('utf-8'))
-
 
 @app.route('/search_word', methods=['POST'])
 def search_word_route():
@@ -569,8 +573,8 @@ def corruption_clusters_route():
 
 @app.route('/generate_heatmap')
 def generate_heatmap():
-    similarity_heatmap()
-    return 'Тепловая карта создана и сохранена как similarity_heatmap.png'
+    heatmap_path = create_heatmap()
+    return redirect(url_for('city_heatmap'))
 
 @app.route('/cluster_heatmap')
 def heatmap_route():
@@ -579,18 +583,13 @@ def heatmap_route():
         image = f.read()
     return render_template('similarity_heatmap.html', image_data=base64.b64encode(image).decode('utf-8'))
 
-@app.route('/cluster_heatmap')
-def cluster_heatmap_route():
-    heatmap_path = similarity_heatmap()
-    with open(heatmap_path, "rb") as f:
-        image = f.read()
-    return render_template('similarity_heatmap.html', image_data=base64.b64encode(image).decode('utf-8'))
-
 @app.route('/city_heatmap')
 def city_heatmap():
-    create_heatmap()  # Убедитесь, что функция create_heatmap существует и создает файл heatmap.html
+    heatmap_path = create_heatmap()
     return render_template('heatmap.html')
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    import multiprocessing
+    multiprocessing.set_start_method('spawn')
+    app.run(debug=True, port=5001)    

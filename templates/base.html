@@ -11,14 +11,15 @@
         }
 
         body, html {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Times New Roman', Times, serif;
             background: linear-gradient(to bottom, #0056b3, #ffffff, #ff0000);
             background-size: 200% 200%;
             animation: moveBackground 30s linear infinite;
-            height: 100%;
+            min-height: 100vh;
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
@@ -32,6 +33,8 @@
             max-width: 800px;
             width: 100%;
             margin: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         h1 {
@@ -54,7 +57,7 @@
             margin-right: 10px;
             margin-bottom: 10px;
             width: calc(100% - 150px);
-            max-width: 300px;
+            max-width: 200px;
         }
 
         form {
@@ -84,9 +87,12 @@
 
         nav {
             margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        nav a {
+        nav a, .nav-button {
             display: block;
             margin: 10px 0;
             padding: 15px;
@@ -96,9 +102,11 @@
             text-decoration: none;
             border-radius: 8px;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            width: 80%;
+            text-align: center;
         }
 
-        nav a:hover {
+        nav a:hover, .nav-button:hover {
             background-color: #0056b3;
             transform: scale(1.05);
         }
@@ -109,12 +117,44 @@
             margin-right: 10px;
             color: #333;
         }
+
+        .visualization {
+            width: 100%;
+            overflow-x: auto;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .visualization img, .visualization table {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
     {% block extra_styles %}{% endblock %}
 </head>
 <body>
     <div class="container {% block container_class %}{% endblock %}">
         {% block content %}
+        <div class="visualization">
+            {% block visualization %}{% endblock %}
+        </div>
         {% endblock %}
         {% if request.path != '/' %}
             <button onclick="window.location.href='/'">Назад</button>
