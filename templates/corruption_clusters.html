@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Кластеры о коррупции{% endblock %}
+{% block title %}Corruption Clusters{% endblock %}
 
 {% block content %}
     <h1>Кластеры обсуждений о коррупции</h1>
-    <img src="data:image/png;base64,{{ image_data }}" alt="Кластеры обсуждений о коррупции">
+    <div class="visualization">
+        <img src="data:image/png;base64,{{ image_data }}" alt="Corruption Clusters">
+    </div>
+    <h2>Информация о кластерах</h2>
+    <div class="results-container">
+        <div class="table-container">
+            {{ cluster_info_html | safe }}
+        </div>
+    </div>
 {% endblock %}

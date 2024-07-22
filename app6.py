@@ -46,6 +46,7 @@ from geopy.geocoders import Nominatim
 import folium
 from folium.plugins import HeatMap
 from opencage.geocoder import OpenCageGeocode
+from matplotlib.patches import Patch
 
 os.environ["TOKENIZERS_PARALLEЛИЗМ"] = "false"
 
@@ -370,15 +371,28 @@ def comment_length_distribution():
         df['sentiment'] = df['comments'].apply(lambda x: model(x[:512])[0]['label'])  # Обрезаем комментарий до 512 токенов
     df['length'] = df['comments'].apply(len)
 
-    plt.figure(figsize=(10, 6))
-    sns.histplot(data=df, x='length', hue='sentiment', multiple='stack', palette='viridis')
+    plt.figure(figsize=(14, 8))
+    ax = sns.histplot(data=df, x='length', hue='sentiment', multiple='stack', palette='viridis', bins=50)
     plt.xlabel('Длина комментария')
     plt.ylabel('Количество комментариев')
     plt.title('Распределение длины комментариев по тональности')
     plt.grid(True)
+    plt.yscale('log')  # Логарифмическая шкала для оси y
+    plt.xlim(0, 1000)  # Ограничиваем диапазон оси x до 1000 для лучшей визуализации
+
+    # Получение уникальных значений тональностей и их цветов
+    handles, labels = ax.get_legend_handles_labels()
+    unique_sentiments = sorted(df['sentiment'].unique())
+    colors = sns.color_palette('viridis', len(unique_sentiments))
+    
+    # Создание пользовательских элементов легенды
+    custom_legend = [Patch(color=colors[i], label=f'{unique_sentiments[i]}') for i in range(len(unique_sentiments))]
+    
+    # Добавление пользовательской легенды
+    plt.legend(handles=custom_legend, title='Настроение', loc='upper right', fontsize='medium')
 
     distribution_path = os.path.join('static', 'comment_length_distribution.png')
-    plt.savefig(distribution_path)
+    plt.savefig(distribution_path, bbox_inches='tight')
     plt.close()
     return distribution_path
 
@@ -424,26 +438,55 @@ def bribe_comment_count():
     return bribe_count_path
 
 def corruption_clusters():
+    # Чтение данных
     df = pd.read_csv("comments.csv")
     df = preprocess_comments(df)
     df['comments'] = df['comments'].str.lower()
     corruption_keywords = ['коррупция', 'взятка', 'подкуп', 'откуп']
     
+    # Определение, содержит ли комментарий ключевые слова
     df['contains_corruption'] = df['comments'].apply(lambda x: any(word in x for word in corruption_keywords))
-    df['cluster'] = KMeans(n_clusters=5, random_state=0).fit_predict(CountVectorizer().fit_transform(df['comments']))
-
+    
+    # Кластеризация комментариев
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(df['comments'])
+    kmeans = KMeans(n_clusters=5, random_state=0)
+    df['cluster'] = kmeans.fit_predict(X)
+    
+    # Подсчет количества комментариев по кластерам
     corruption_counts = df[df['contains_corruption']].groupby('cluster').size()
+    
+    # Определение информации о кластерах
+    cluster_info = {
+        0: "В нём содержатся общие обсуждения случаев коррупции в стране и непосредственно в материалах, под которым написан комментарий.",
+        1: "В нём содержатся комментарии с личным опытом о взяточничестве, рассказы о столкновении с коррупцией.",
+        2: "В основном содержит недовольство граждан, общие обсуждения проблем под лозунгом 'нужно сажать'.",
+        3: "Обсуждение коррупционной политики, реформ и в целом обсуждение изменения законодательства для борьбы со взятками, злоупотреблением власти и так далее.",
+        4: "Конкретные обвинения в коррумпированности личностей или организаций."
+    }
 
+    # Построение диаграммы
     plt.figure(figsize=(10, 6))
     if len(corruption_counts) > 0:
-        corruption_counts.plot(kind='pie', autopct='%1.1f%%', startangle=90, colors=sns.color_palette('viridis', len(corruption_counts)))
+        labels = [f'Cluster {i}' for i in corruption_counts.index]
+        corruption_counts.plot(kind='pie', labels=labels, startangle=90, colors=sns.color_palette('viridis', len(corruption_counts)), autopct='')
+        plt.legend([f'Cluster {i}: {count}' for i, count in corruption_counts.items()], loc="center left", bbox_to_anchor=(1, 0.5), fontsize='large')
+    
     plt.title('Кластеры обсуждений о коррупции')
     plt.ylabel('')
     
+    # Сохранение диаграммы
     corruption_clusters_path = os.path.join('static', 'corruption_clusters.png')
-    plt.savefig(corruption_clusters_path)
+    plt.savefig(corruption_clusters_path, bbox_inches='tight')
     plt.close()
-    return corruption_clusters_path
+
+    # Генерация HTML для отображения информации о кластерах
+    cluster_info_html = '<table border="1"><tr><th>Кластер</th><th>Описание</th></tr>'
+    for cluster_id, info in cluster_info.items():
+        cluster_info_html += f'<tr><td>Cluster {cluster_id}</td><td>{info}</td></tr>'
+    cluster_info_html += '</table>'
+
+    return corruption_clusters_path, cluster_info_html
 
 def preprocess_text(text):
     return text.lower()
@@ -718,10 +761,10 @@ def bribe_comment_count_route():
 
 @app.route('/corruption_clusters')
 def corruption_clusters_route():
-    corruption_clusters_path = corruption_clusters()
+    corruption_clusters_path, cluster_info_html = corruption_clusters()
     with open(corruption_clusters_path, "rb") as f:
         image = f.read()
-    return render_template('corruption_clusters.html', image_data=base64.b64encode(image).decode('utf-8'))
+    return render_template('corruption_clusters.html', image_data=base64.b64encode(image).decode('utf-8'), cluster_info_html=cluster_info_html)
 
 @app.route('/generate_heatmap')
 def generate_heatmap():
@@ -761,3 +804,9 @@ if __name__ == '__main__':
     import multiprocessing
     multiprocessing.set_start_method('spawn')
     app.run(debug=True, port=5001)
+
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 5000))
+#     app.run(debug=False, host='0.0.0.0', port=port)
+
+
