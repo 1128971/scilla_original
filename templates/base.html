@@ -11,7 +11,7 @@
         }
 
         body, html {
-            font-family: 'Times New Roman', Times, serif;
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(to bottom, #0056b3, #ffffff, #ff0000);
             background-size: 200% 200%;
             animation: moveBackground 30s linear infinite;
@@ -30,11 +30,24 @@
             border-radius: 12px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             text-align: center;
-            max-width: 800px;
+            max-width: 1200px;
             width: 100%;
             margin: 20px;
             box-sizing: border-box;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .left-column, .right-column {
+            width: 48%;
         }
 
         h1 {
@@ -123,28 +136,49 @@
             overflow-x: auto;
             text-align: center;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
         }
 
-        .visualization img, .visualization table {
+        .visualization img, .visualization table, .visualization canvas, .visualization svg {
             max-width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         th, td {
             padding: 12px;
             border: 1px solid #ddd;
             text-align: left;
+            word-wrap: break-word;
         }
 
         th {
             background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        .results-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
         }
     </style>
     {% block extra_styles %}{% endblock %}
@@ -152,6 +186,14 @@
 <body>
     <div class="container {% block container_class %}{% endblock %}">
         {% block content %}
+        <div class="main-content">
+            <div class="left-column">
+                {% block left_content %}{% endblock %}
+            </div>
+            <div class="right-column">
+                {% block right_content %}{% endblock %}
+            </div>
+        </div>
         <div class="visualization">
             {% block visualization %}{% endblock %}
         </div>

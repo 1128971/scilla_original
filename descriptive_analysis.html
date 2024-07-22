@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Описательная аналитика{% endblock %}
+
+{% block content %}
+    <h1>Описательная аналитика</h1>
+    
+    <h2>Основные статистики</h2>
+    <table>
+        {% for key, value in statistics.items() %}
+        <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Количество комментариев по источникам</h2>
+    <table>
+        <tr>
+            <th>Источник</th>
+            <th>Количество комментариев</th>
+        </tr>
+        {% for source, count in source_counts.items() %}
+        <tr>
+            <td>{{ source }}</td>
+            <td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Распределение тональностей комментариев</h2>
+    <table>
+        <tr>
+            <th>Тональность</th>
+            <th>Количество комментариев</th>
+        </tr>
+        {% for sentiment, count in sentiment_counts.items() %}
+        <tr>
+            <td>{{ sentiment }}</td>
+            <td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -4,5 +4,20 @@
 
 {% block content %}
     <h1>Кластеры комментариев</h1>
-    {{ tables | safe }}
+    <table>
+        <thead>
+            <tr>
+                <th>Комментарий</th>
+                <th>Кластер</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in tables %}
+            <tr>
+                <td>{{ row.Комментарий }}</td>
+                <td>{{ row.Кластер }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

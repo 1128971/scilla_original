@@ -1,19 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}Результаты Парсинга{% endblock %}
+{% block title %}Результаты парсинга{% endblock %}
 
 {% block content %}
-    <h1>Результаты Парсинга</h1>
-    <table>
-        <tr>
-            <th>Комментарий</th>
-            <th>Лайки</th>
-        </tr>
-        {% for comment, like in data %}
-        <tr>
-            <td>{{ comment }}</td>
-            <td>{{ like }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="results-container">
+        <h1>Результаты парсинга комментариев</h1>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Комментарий</th>
+                        <th>Лайки</th>
+                        <th>Пользователь</th>
+                        <th>Ссылка на пользователя</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comment, likes, user, user_url in data %}
+                    <tr>
+                        <td>{{ comment }}</td>
+                        <td>{{ likes }}</td>
+                        <td>{{ user }}</td>
+                        <td><a href="{{ user_url }}" target="_blank">Профиль</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

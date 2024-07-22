@@ -2,7 +2,7 @@
 
 {% block title %}Scilla - Главная{% endblock %}
 
-{% block content %}
+{% block left_content %}
     <h1>Scilla</h1>
     <section>
         <h2>Спарсить комментарии</h2>
@@ -27,6 +27,7 @@
                 <option value="sentiment">Эмоциональный окрас</option>
                 <option value="max_likes">Топ по лайкам</option>
                 <option value="histogram">Создать гистограмму</option>
+                <option value="descriptive_statistics">Описательная аналитика</option>
             </select>
             <button class="form-action-button" type="submit">Анализировать</button>
         </form>
@@ -40,6 +41,15 @@
         </form>
     </section>
 
+    <section>
+        <h2>Поиск по ключевым словам</h2>
+        <form action="/search_bribe_comments" method="post">
+            <button class="form-action-button" type="submit">Искать комментарии о взятках и т.п.</button>
+        </form>
+    </section>
+{% endblock %}
+
+{% block right_content %}
     <nav>
         <h2>Дополнительный анализ</h2>
         <a href="/sentiment_distribution">Распределение тональности комментариев</a>
@@ -49,5 +59,6 @@
         <a href="/corruption_clusters">Кластеры о коррупции</a>
         <a href="/cluster_heatmap">Тепловая карта схожести кластеров</a>
         <a class="nav-button" onclick="window.location.href='/city_heatmap'">Карта с упоминанием городов России</a>
+        <a class="nav-button" onclick="window.location.href='/corruption_map'">Карта с упоминанием коррупции в городах России</a>
     </nav>
 {% endblock %}

@@ -1,10 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Топ по лайкам{% endblock %}
+{% block title %}Топ 50 понравившихся комментариев{% endblock %}
 
 {% block content %}
-    <h1>Топ по лайкам</h1>
-    <div class="table-container">
-        {{ tables | safe }}
-    </div>
+<h1>Топ 50 понравившихся комментариев</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Комментарий</th>
+            <th>Пользователь</th>
+            <th>Количество лайков</th>
+            <th>Ссылка на пользователя</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in tables %}
+        <tr>
+            <td>{{ row.comments }}</td>
+            <td>{{ row.user }}</td>
+            <td>{{ row.likes }}</td>
+            <td><a href="{{ row.user_url }}" target="_blank">Профиль</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
