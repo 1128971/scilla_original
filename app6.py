@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for
-import time
 import numpy as np
 import requests
 import re
@@ -23,18 +22,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from collections import Counter
 import csv
-import mplcyberpunk
 from urllib.parse import urljoin
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import nltk
-import vk_api
 import json
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.keys import Keys
-from telebot import types
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram import ReplyKeyboardMarkup
 from googleapiclient.discovery import build
 from wordcloud import WordCloud
 from nltk.tokenize import word_tokenize
@@ -42,7 +35,6 @@ from nltk.corpus import stopwords
 from transformers import pipeline
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer
-from geopy.geocoders import Nominatim
 import folium
 from folium.plugins import HeatMap
 from opencage.geocoder import OpenCageGeocode
@@ -805,8 +797,6 @@ if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
     app.run(debug=True, port=5001)
 
-# if __name__ == "__main__":
-#     port = int(os.environ.get("PORT", 5000))
-#     app.run(debug=False, host='0.0.0.0', port=port)
+
 
 
